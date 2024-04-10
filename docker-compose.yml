@@ -57,18 +57,29 @@ services:
     networks:
       - incredible-squaring-network
 
-  # operator2:
-  #   image: ghcr.io/layr-labs/incredible-squaring/operator/cmd/main.go:latest
-  #   container_name: incredible-squaring-operator2
-  #   depends_on:
-  #     anvil:
-  #       condition: service_started
-  #   volumes:
-  #     - ./:/incredible-squaring/
-  #   working_dir: /incredible-squaring
-  #   command: --config config-files/operator-docker-compose.anvil.yaml --credible-squaring-deployment contracts/script/output/31337/credible_squaring_avs_deployment_output.json --ecdsa-private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d --bls-private-key 2
-  #   networks:
-  #     - incredible-squaring-network
+  operator2:
+    image: ghcr.io/layr-labs/incredible-squaring/operator/cmd/main.go:latest
+    build:
+      dockerfile: operator.Dockerfile
+      context: .
+    container_name: incredible-squaring-operator2
+    depends_on:
+      anvil:
+        condition: service_started
+    volumes:
+      - ./:/incredible-squaring/
+    working_dir: /incredible-squaring
+    command:
+      - --config
+      - config-files/aggregator-docker-compose.yaml
+      - --credible-squaring-deployment
+      - contracts/script/output/31337/credible_squaring_avs_deployment_output.json
+      - --ecdsa-private-key
+      - "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+      - --bls-private-key
+      - "2"
+    networks:
+      - incredible-squaring-network
 
   # METRICS RELATED
   grafana:
